@@ -4,14 +4,11 @@ import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // Import the screen components
-import { HomeScreen } from '../pages/HomeScreen';
+import HomeScreen from '../pages/HomeScreen';
 import { SearchScreen } from '../pages/SearchScreen';
 import { NotificationsScreen } from '../pages/NotificationsScreen';
 import { ProfileScreen } from '../pages/ProfileScreen.js';
 import { CartScreen } from '../pages/CartScreen.js';
-
-
-import HomeStackNavigator from './HomeStackNavigator';
 
 // Import icons
 import HomeIcon from '../icons/home.png';
@@ -24,7 +21,6 @@ import NotificationIcon from '../icons/notification.png';
 import NotificationActiveIcon from '../icons/notificationActive.png';
 import CartIcon from '../icons/cart.png';
 import CartActiveIcon from '../icons/cartActive.png';
-// ... and so on for the other icons
 
 // import headers
 import HomeHeader from '../headers/HomeHeader';
