@@ -4,11 +4,11 @@ import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // Import the screen components
-import HomeScreen from '../pages/HomeScreen';
 import { SearchScreen } from '../pages/SearchScreen';
 import { NotificationsScreen } from '../pages/NotificationsScreen';
 import { ProfileScreen } from '../pages/ProfileScreen.js';
 import { CartScreen } from '../pages/CartScreen.js';
+import HomeStackNavigator from './HomeStackNavigator';
 
 // Import icons
 import HomeIcon from '../icons/home.png';
@@ -22,8 +22,6 @@ import NotificationActiveIcon from '../icons/notificationActive.png';
 import CartIcon from '../icons/cart.png';
 import CartActiveIcon from '../icons/cartActive.png';
 
-// import headers
-import HomeHeader from '../headers/HomeHeader';
 
 
 const Tab = createBottomTabNavigator();
@@ -33,6 +31,7 @@ const BottomTabNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerTitle: route.name,
+        headerShown: false,
         tabBarShowLabel: false,
         headerTitleAlign: 'center', // Align the header title to center
         headerStyle: {
@@ -42,7 +41,7 @@ const BottomTabNavigator = () => {
         tabBarIcon: ({ focused }) => {
           let icon;
           switch (route.name) {
-            case 'Home':
+            case 'Main':
               icon = focused ? HomeActiveIcon : HomeIcon;
               break;
              case 'Search':
@@ -65,11 +64,7 @@ const BottomTabNavigator = () => {
       })}
     >
        {/* <Tab.Screen name="HomeStack" component={HomeStackNavigator} options={{ title: 'Home' }} /> */}
-      <Tab.Screen name="Home" component={HomeScreen} 
-      options={{
-          header: () => <HomeHeader />,
-          // Other common options can go here
-        }} />
+       <Tab.Screen name="Main" component={HomeStackNavigator} options={{ title: 'Home' }} />
       <Tab.Screen name="Search" component={SearchScreen} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />

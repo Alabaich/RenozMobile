@@ -1,12 +1,34 @@
-// In ./src/pages/HomeScreen.tsx
+// HomeScreen.tsx
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../types'; // Adjust the import path as necessary
 
-const HomeScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Home Screen</Text>
-  </View>
-);
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
+type Props = {
+  navigation: HomeScreenNavigationProp;
+};
 
-export default HomeScreen; 
+const HomeScreen: React.FC<Props> = ({ navigation }) => {
+  return (
+    <View style={styles.container}>
+      <Text>Home Screen</Text>
+      <Button
+        title="Go to Categories"
+        onPress={() => navigation.navigate('Categories')}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // Add other styles as needed
+});
+
+export default HomeScreen;

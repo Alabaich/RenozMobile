@@ -4,34 +4,20 @@ import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import Logo from '../images/logo.png'; // Update with the correct path to your logo
 
 import MenuIcon from '../icons/humburger.png'; // Update with the correct path to your menu icon
-
 import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../types'; // Adjust the import path as necessary
 
-import { RootStackParamList } from '../../types';
-
-// type HomeStackNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
-
-// type HomeHeaderProps = {
-//     navigation: HomeStackNavigationProp;
-//   };
-
-// const HomeHeader = ({ navigation }: HomeHeaderProps) => {
-//   return (
-//     <View style={styles.headerContainer}>
-//       <TouchableOpacity onPress={() => navigation.navigate('Categories')}>
-//         <Image source={MenuIcon} style={styles.icon} />
-//       </TouchableOpacity>
-//       <Image source={Logo} style={styles.logo} resizeMode="contain" />
-//       <Image source={MenuIcon} style={styles.iconInv} />
-//     </View>
-//   );
-// };
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
 
-const HomeHeader = () => {
+type HomeHeaderProps = {
+  navigation: HomeScreenNavigationProp;
+};
+
+const HomeHeader: React.FC<HomeHeaderProps> = ({ navigation }) => {
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity >
+      <TouchableOpacity onPress={() => navigation.navigate('Categories')}>
         <Image source={MenuIcon} style={styles.icon} />
       </TouchableOpacity>
       <Image source={Logo} style={styles.logo} resizeMode="contain" />
