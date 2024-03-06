@@ -18,6 +18,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         title="Go to Categories"
         onPress={() => navigation.navigate('Categories')}
       />
+      <Button
+        title="Go to Products"
+        onPress={() => navigation.navigate('Products')}
+      />
     </View>
   );
 };

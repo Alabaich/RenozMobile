@@ -1,10 +1,11 @@
 // In ./src/pages/HomeScreen.tsx
 import React from 'react';
 import { View, Text } from 'react-native';
+import AllProductsComponent from '../components/shopifyInitialisation';
 
 export const NotificationsScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Notifications Screen</Text>
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', background: "#fff", }}>
+    <AllProductsComponent />
   </View>
 );
 

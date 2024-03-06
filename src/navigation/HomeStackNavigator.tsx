@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../pages/HomeScreen';
 import HomeHeader from '../headers/HomeHeader';
 import CategoriesScreen from '../pages/CategoriesScreen';
+import ProductsComponent from '../components/ProductsComponent';
 
 // Import any other screens you might want to navigate to from the Home tab
 // import DetailsScreen from '../pages/DetailsScreen';
@@ -26,6 +27,11 @@ const HomeStackNavigator = () => {
         name="Categories"
         component={CategoriesScreen}
         options={{ /* options for CategoriesScreen */ }}
+      />
+      <HomeStack.Screen 
+        name="Products"
+        component={ProductsComponent}
+        options={{  }}
       />
     </HomeStack.Navigator>
   );

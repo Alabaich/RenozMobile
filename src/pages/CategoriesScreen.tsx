@@ -1,11 +1,13 @@
 
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
+import AllProductsComponent from '../components/shopifyInitialisation';
 
 const CategoriesScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text>Categories Screen</Text>
+      <AllProductsComponent />
     </View>
   );
 };

@@ -1,48 +1,68 @@
 // ProductsComponent.tsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, FlatList } from 'react-native';
 import client from './shopifyClient';
 
-
 type Product = {
-    id: string;
-    title: string;
-    // ... add other product properties you expect to receive
-  };
+  id: string;
+  title: string;
+  handle: string;
+};
 
+const ProductsComponent: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const ProductsComponent: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-  
-    useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          // Use the correct method to fetch products from Shopify
-          // This code assumes there is a method to fetch all products. You will need to
-          // check the actual documentation or package to see how to perform this action.
-          const productsData = await client.products.fetchAll();
-          setProducts(productsData);
-        } catch (error) {
-          console.error("Failed to fetch products:", error);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      // Query to fetch the first 10 products
+      const productsQuery = `
+        {
+          products(first: 10) {
+            edges {
+              node {
+                id
+                title
+                handle
+              }
+            }
+          }
         }
-        setLoading(false);
-      };
-  
-      fetchProducts();
-    }, []);
-  
-    if (loading) {
-      return <ActivityIndicator />;
-    }
-  
-    return (
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text>{item.title}</Text>}
-      />
-    );
-  };
-  
-  export default ProductsComponent;
+      `;
+      try {
+        const { data } = await client.request(productsQuery);
+        if (data.products.edges.length) {
+          // Map through the edges to get the product node
+          setProducts(data.products.edges.map(({ node }: { node: Product }) => node));
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator />;
+  }
+
+  if (products.length === 0) {
+    return <Text>No products found</Text>;
+  }
+
+  return (
+    <FlatList
+      data={products}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <View style={{ padding: 10 }}>
+          <Text>{item.title}</Text>
+        </View>
+      )}
+    />
+  );
+};
+
+export default ProductsComponent;
