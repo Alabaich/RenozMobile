@@ -20,7 +20,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Button
         title="Go to Products"
-        onPress={() => navigation.navigate('Products')}
+        onPress={() => navigation.navigate('Collections')}
       />
     </View>
   );

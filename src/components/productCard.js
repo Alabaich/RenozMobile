@@ -1,12 +1,15 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import defaultImage from '../images/defaultImage.png'
 
 const ProductCard = ({ product, onPress }) => {
-  const imageUri = product.images[0].src; // Using optional chaining to avoid errors if images[0] is undefined
+  const imageSrc = product.images?.[0]?.src ? { uri: product.images[0].src } : defaultImage;
+
   return (
-    <TouchableOpacity onPress={onPress} style={styles.cardContainer}>
-      <Image source={{ uri: imageUri }} style={styles.image} />
+    <TouchableOpacity onPress={() => onPress(product)} style={styles.cardContainer}>
+      <Image source={imageSrc} style={styles.image} />
       <Text style={styles.title}>{product.title}</Text>
+      <Text style={styles.vendor}>{product.vendor}</Text> 
       <Text>${product.variants[0].price.amount}</Text>
     </TouchableOpacity>
   );
@@ -18,7 +21,23 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     width: "50%",
-    margin: 8
+    margin: 8,
+    padding: 10,
+    borderRadius: 15,
+    overflow: "hidden",
+    backgroundColor: '#fff', // Set the background color to white
+  
+    // Shadow for iOS
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 1.41,
+  
+    // Elevation for Android
+    elevation: 2,
   },
   image: {
     width: "100%", 
@@ -30,6 +49,13 @@ const styles = StyleSheet.create({
   price: {
     // Define your styles for the price
   },
+
+  vendor: {
+    // Style for vendor text
+    fontSize: 14,
+    color: 'gray',
+  },
 });
 
-export default ProductCard;
+export default React.memo(ProductCard);
+
