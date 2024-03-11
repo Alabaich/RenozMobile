@@ -3,14 +3,18 @@ import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from './src/navigation/bottomTabNavigator';
+import { UserProvider } from './src/UserContext';
 
 const App = () => {
   return (
-    <SafeAreaView style={styles.container}>
-      <NavigationContainer>
-        <BottomTabNavigator />
-      </NavigationContainer>
-    </SafeAreaView>
+    <UserProvider>
+      <SafeAreaView style={styles.container}>
+        <NavigationContainer>
+          <BottomTabNavigator />
+        </NavigationContainer>
+      </SafeAreaView>
+    </UserProvider>
+
   );
 };
 
