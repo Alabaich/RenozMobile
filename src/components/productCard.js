@@ -2,15 +2,24 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import defaultImage from '../images/defaultImage.png'
 
-const ProductCard = ({ product, onPress }) => {
+const ProductCard = ({ product, onPress, customCardStyle  }) => {
   const imageSrc = product.images?.[0]?.src ? { uri: product.images[0].src } : defaultImage;
 
+  const truncateTitle = (title) => {
+    const wordLimit = 5;
+    const wordsArray = title.split(' ');
+    if (wordsArray.length > wordLimit) {
+      return wordsArray.slice(0, wordLimit).join(' ') + '...';
+    }
+    return title;
+  };
+
   return (
-    <TouchableOpacity onPress={() => onPress(product)} style={styles.cardContainer}>
+    <TouchableOpacity onPress={() => onPress(product)} style={[styles.cardContainer, customCardStyle]}>
       <Image source={imageSrc} style={styles.image} />
-      <Text style={styles.title}>{product.title}</Text>
+      <Text style={styles.title}>{truncateTitle(product.title)}</Text>
       <Text style={styles.vendor}>{product.vendor}</Text> 
-      <Text>${product.variants[0].price.amount}</Text>
+      <Text style={styles.price}>${product.variants[0].price.amount}</Text>
     </TouchableOpacity>
   );
 };

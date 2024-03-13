@@ -18,7 +18,6 @@ const CollectionsListScreen = ({ navigation }) => {
       onPress={() => // Example navigation call with params
       navigation.navigate('CollectionProducts', { collectionId: item.id, collectionName: item.title })
       }
-
     >
       <Text>{item.title}</Text>
     </TouchableOpacity>
@@ -29,7 +28,6 @@ const CollectionsListScreen = ({ navigation }) => {
       data={collections}
       keyExtractor={(item) => item.id.toString()}
       renderItem={renderCollection}
-      // Other props and styles
     />
   );
 };

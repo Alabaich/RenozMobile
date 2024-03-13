@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, Button } from 'react-native';
 import client from '../components/shopifyInitialisation';
-import defaultImage from "../images/defaultImage.png"
+import defaultImage from "../images/defaultImage.png";
+import { useCart } from '../CartContext'; // Make sure to import useCart
 
 const ProductDetail = ({ route }) => {
   const { productId } = route.params;
   const [product, setProduct] = useState(null);
+  const { addToCart } = useCart(); // Use the useCart hook
 
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
-        // Using the correct function according to the documentation
         const productDetails = await client.product.fetch(productId);
         setProduct(productDetails);
       } catch (error) {
@@ -27,13 +28,22 @@ const ProductDetail = ({ route }) => {
 
   const imageSrc = product.images?.[0]?.src ? { uri: product.images[0].src } : defaultImage;
 
-
+  const handleAddToCart = () => {
+    if(product.variants?.length > 0) {
+      const variantId = product.variants[0].id; // Using the first variant for simplicity
+      addToCart(variantId, 1); // Assuming we are adding 1 quantity
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
       <Image source={imageSrc} style={styles.image} />
-      <Text style={styles.title}>{product.title}</Text>
-      <Text style={styles.vendor}>{product.vendor}</Text> 
+      <View style={styles.infoContainer}>
+        <Text style={styles.title}>{product.title}</Text>
+        <Text style={styles.vendor}>{product.vendor}</Text>
+        {/* Additional product details */}
+        <Button title="Add to Cart" onPress={handleAddToCart} />
+      </View>
     </ScrollView>
   );
 };
@@ -45,18 +55,21 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 300, // You can adjust the height as needed
+    height: 300,
+  },
+  infoContainer: {
+    padding: 15,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    margin: 15,
   },
   vendor: {
     fontSize: 14,
     color: 'gray',
-    margin: 15,
+    marginBottom: 15,
   },
+  // Add styles for your button if needed
 });
 
 export default ProductDetail;

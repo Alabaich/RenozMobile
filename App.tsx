@@ -1,23 +1,32 @@
-// App.tsx
 import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from './src/navigation/bottomTabNavigator';
-import { UserProvider } from './src/UserContext';
+import LoginScreen from './src/pages/LoginScreen';
+import { UserProvider, useUser } from './src/UserContext';
+import { CartProvider } from './src/CartContext';
+
+// Create a new component that will determine which screen to show
+const AuthSwitch = () => {
+  const { isLoggedIn } = useUser(); // Use the hook inside this component
+
+  // Based on the isLoggedIn state, decide what to render
+  return isLoggedIn ? <BottomTabNavigator /> : <LoginScreen />;
+};
 
 const App = () => {
   return (
     <UserProvider>
-      <SafeAreaView style={styles.container}>
-        <NavigationContainer>
-          <BottomTabNavigator />
-        </NavigationContainer>
-      </SafeAreaView>
+      <CartProvider>
+        <SafeAreaView style={styles.container}>
+          <NavigationContainer>
+            <AuthSwitch />
+          </NavigationContainer>
+        </SafeAreaView>
+      </CartProvider>
     </UserProvider>
-
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
