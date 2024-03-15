@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { View, FlatList, StyleSheet, Dimensions, Text } from 'react-native';
 import ProductCard from './productCard';
 import { collectionIds } from './collectionIds';
 import client from './shopifyInitialisation';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const ProductsSlider = ({ navigation, collectionName }) => {
+const ProductsSlider = ({ navigation, collectionName, sectionTitle }) => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -35,6 +35,7 @@ const ProductsSlider = ({ navigation, collectionName }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.sectionTitle}>{sectionTitle}</Text>
       <FlatList
         horizontal
         data={products}
@@ -50,14 +51,22 @@ const ProductsSlider = ({ navigation, collectionName }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // Add styles for the container that holds the carousel
+    paddingLeft: 7,
+    paddingRight: 7,
+    backgroundColor: "#fff"
   },
   customCard: {
     width: 200,
-    paddingBottom: 25
-    // custom styles for ProductCard when used inside ProductsSlider
+    paddingBottom: 25,
   },
-  // Add any additional styles you may need
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'left',
+    color: "#2c2d2c",
+    paddingLeft: 7,
+    // Add any additional styling you want for the section title
+  },
 });
 
 export default ProductsSlider;

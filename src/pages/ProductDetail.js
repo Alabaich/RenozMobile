@@ -1,13 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, Button } from 'react-native';
-import client from '../components/shopifyInitialisation';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button, Dimensions, Image, TouchableOpacity } from 'react-native';
+import client from '../components/shopifyInitialisation'; // Ensure this path is correct
+import Carousel from 'react-native-snap-carousel';
 import defaultImage from "../images/defaultImage.png";
 import { useCart } from '../CartContext'; // Make sure to import useCart
+import { PanResponder } from 'react-native';
+import closeIcon from "../icons/close.png"; 
+import Modal from 'react-native-modal';
+
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const ProductDetail = ({ route }) => {
   const { productId } = route.params;
   const [product, setProduct] = useState(null);
-  const { addToCart } = useCart(); // Use the useCart hook
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -22,28 +31,70 @@ const ProductDetail = ({ route }) => {
     fetchProductDetails();
   }, [productId]);
 
+
+  const renderItem = ({ item, index }) => {
+    return (
+      <TouchableOpacity onPress={() => { setSelectedImageIndex(index); setModalVisible(true); }}>
+        <Image
+          source={{ uri: item.src }}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const handleAddToCart = () => {
+    if (product.variants?.length > 0) {
+      const variantId = product.variants[0].id;
+      addToCart(variantId, 1);
+    }
+  };
+
   if (!product) {
     return <ActivityIndicator size="large" />;
   }
 
-  const imageSrc = product.images?.[0]?.src ? { uri: product.images[0].src } : defaultImage;
-
-  const handleAddToCart = () => {
-    if(product.variants?.length > 0) {
-      const variantId = product.variants[0].id; // Using the first variant for simplicity
-      addToCart(variantId, 1); // Assuming we are adding 1 quantity
-    }
-  };
-
   return (
     <ScrollView style={styles.container}>
-      <Image source={imageSrc} style={styles.image} />
+      <Carousel
+        data={product.images.length > 0 ? product.images : [{ src: defaultImage }]}
+        renderItem={renderItem}
+        sliderWidth={screenWidth}
+        itemWidth={screenWidth}
+        loop={true}
+      />
       <View style={styles.infoContainer}>
         <Text style={styles.title}>{product.title}</Text>
         <Text style={styles.vendor}>{product.vendor}</Text>
-        {/* Additional product details */}
         <Button title="Add to Cart" onPress={handleAddToCart} />
       </View>
+        
+      <Modal
+  isVisible={modalVisible}
+  onSwipeComplete={() => setModalVisible(false)}
+  swipeDirection={['down']}
+  style={styles.modal}
+  onBackdropPress={() => setModalVisible(false)}
+  onBackButtonPress={() => setModalVisible(false)}
+>
+<View style={styles.modalContent}>
+    <Carousel
+      data={product.images}
+      renderItem={renderItem}
+      sliderWidth={screenWidth}
+      itemWidth={screenWidth}
+      firstItem={selectedImageIndex}
+      style={styles.carousel}
+    />
+    <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+      <Image source={closeIcon} style={styles.closeButtonIcon} />
+    </TouchableOpacity>
+  </View>
+</Modal>
+
     </ScrollView>
   );
 };
@@ -54,7 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   image: {
-    width: '100%',
+    width: screenWidth,
     height: 300,
   },
   infoContainer: {
@@ -69,7 +120,52 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginBottom: 15,
   },
-  // Add styles for your button if needed
+  fullScreenImageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  fullScreenImage: {
+    width: screenWidth,
+    height: screenHeight,
+  },
+  // Additional styles as needed
+  closeButton: {
+    position: "absolute",
+    top: 45,
+    right: 20,
+    zIndex: 10,
+  },
+  closeButtonIcon: {
+    width: 35, 
+    height: 35,
+  }, 
+  modal: {
+    margin: 0, 
+    justifyContent: 'flex-end', 
+  },
+  modalContent: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButton: {
+    position: "absolute",
+    top: 45,
+    right: 20,
+    zIndex: 10,
+  },
+  closeButtonIcon: {
+    width: 35,
+    height: 35,
+  },
+  carousel: {
+    borderWidth: 1, 
+    borderColor: 'red',
+    flex: 1, 
+  },
 });
 
 export default ProductDetail;

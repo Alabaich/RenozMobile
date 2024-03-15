@@ -17,14 +17,16 @@ export const CartScreen = () => {
       console.error("Failed to open checkout:", error);
     }
   };
-
+  
   // This renderItem function is for rendering each item in the cart
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <Text style={styles.itemText}>{item.title} - Quantity: {item.quantity}</Text>
+      <Text>Price: {item.price}</Text>
       <Button title="Remove" onPress={() => removeFromCart(item.id)} />
     </View>
   );
+  
 
   return (
     <View style={styles.container}>
@@ -55,6 +57,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     backgroundColor: '#f0f0f0',
+ 
   },
   itemText: {
     fontSize: 16,

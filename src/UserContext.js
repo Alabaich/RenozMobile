@@ -7,11 +7,13 @@ const UserContext = createContext({
   loginUser: () => {},
   logoutUser: () => {},
   isLoggedIn: false, // Add this line
+  isLoading: true,
 });
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); 
 
   // Function to log in the user and save the user's data
   const loginUser = async (userData) => {
@@ -34,14 +36,18 @@ export const UserProvider = ({ children }) => {
       if (userDataString) {
         const userData = JSON.parse(userDataString);
         setUser(userData);
+        setIsLoggedIn(true);
       }
+      setIsLoading(false); // Set loading to false after checking user data
     };
     
     loadUserData();
   }, []);
+  
+  
 
   return (
-    <UserContext.Provider value={{ user, setUser, loginUser, logoutUser, isLoggedIn }}> 
+    <UserContext.Provider value={{ user, setUser, loginUser, logoutUser, isLoggedIn, isLoading }}> 
       {children}
     </UserContext.Provider>
   );

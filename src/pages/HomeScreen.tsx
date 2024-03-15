@@ -6,6 +6,8 @@ import { RootStackParamList } from '../../types'; // Adjust the import path as n
 import CollectionImage from '../components/collectionImage';
 import CollectionSlider from '../components/CollectionsSlider';
 import ProductsSlider from '../components/productsSlider';
+import CartSummary from '../components/CartSummary';
+import CollectionCards from '../components/CollectionGrid';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -24,7 +26,16 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       /> 
       <CollectionImage collectionName="main_sale" navigation={navigation} />
       */}
-      <ProductsSlider collectionName="main_sale" navigation={navigation} />
+      <CartSummary navigation={navigation} />
+      <ProductsSlider 
+      collectionName="main_sale" 
+      navigation={navigation}
+      sectionTitle="Featured Collections" />
+      <CollectionCards
+        navigation={navigation}
+        collectionNames={['Toilets', 'Bathtubs', 'Faucets', 'ShowerKits']}
+        sectionTitle="Plumbing Perfection for Every Home"
+      />
     </ScrollView>
   );
 };
@@ -32,6 +43,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     height: "auto",
+    backgroundColor: "#fff",
+    minHeight: "100%"
   },
 });
 

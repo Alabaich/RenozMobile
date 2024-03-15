@@ -12,7 +12,7 @@ const leftArrowIcon = require('../icons/leftArrow.png');
 const rightArrowIcon = require('../icons/rightArrow.png');
 
 
-const CollectionSlider = ({ navigation, collectionsList }) => {
+const CollectionSlider = ({ navigation, collectionsList  }) => {
   const [collections, setCollections] = useState([]);
   const carouselRef = useRef(null);
 
@@ -112,6 +112,7 @@ const CollectionSlider = ({ navigation, collectionsList }) => {
 
   return (
     <View style={ styles.container }>
+      
       {renderLeftArrow()}
       <Carousel
       ref={carouselRef}
@@ -181,11 +182,12 @@ const styles = StyleSheet.create({
   },
 
   arrowImage: {
-    width: 20, 
-    height: 20, 
+    width: 25, 
+    height: 25, 
     resizeMode: 'contain', 
     opacity: 0.5,
   },
+
 });
 
 export default CollectionSlider;

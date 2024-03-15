@@ -48,44 +48,56 @@ export const createCart = async () => {
 
 export const addItemToCart = async (cartId, variantId, quantity) => {
   const mutation = `
-    mutation($cartId: ID!, $lines: [CartLineInput!]!) {
-      cartLinesAdd(cartId: $cartId, lines: $lines) {
-        cart {
-          id
-          lines(first: 10) {
-            edges {
-              node {
-                id
-                merchandise {
-                  ... on ProductVariant {
-                    id
-                    product {
-                      title
+  mutation($cartId: ID!, $lines: [CartLineInput!]!) {
+    cartLinesAdd(cartId: $cartId, lines: $lines) {
+      cart {
+        id
+        lines(first: 10) {
+          edges {
+            node {
+              id
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  priceV2 {
+                    amount
+                    currencyCode
+                  }
+                  product {
+                    title
+                    images(first: 1) {
+                      edges {
+                        node {
+                          originalSrc
+                        }
+                      }
                     }
                   }
                 }
-                quantity
               }
+              quantity
             }
           }
         }
       }
     }
-  `;
+  }
+`;
 
-  const variables = {
-    cartId,
-    lines: [
-      { merchandiseId: variantId, quantity },
-    ],
-  };
+const variables = {
+  cartId,
+  lines: [{ merchandiseId: variantId, quantity }],
+};
 
-  const data = await shopifyGraphQLOperation(mutation, variables);
-  return data.cartLinesAdd.cart.lines.edges.map(edge => ({
-    id: edge.node.id,
-    title: edge.node.merchandise.product.title,
-    quantity: edge.node.quantity,
-  }));
+const data = await shopifyGraphQLOperation(mutation, variables);
+return data.cartLinesAdd.cart.lines.edges.map(edge => ({
+  id: edge.node.id,
+  title: edge.node.merchandise.product.title,
+  quantity: edge.node.quantity,
+  price: `${edge.node.merchandise.priceV2.amount} ${edge.node.merchandise.priceV2.currencyCode}`,
+  imageSrc: edge.node.merchandise.product.images.edges[0]?.node.originalSrc, // Assuming at least one image exists
+}));
 };
 
 export const setCartBuyerIdentity = async (cartId, email) => {
