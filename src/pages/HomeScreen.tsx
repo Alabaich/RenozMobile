@@ -27,6 +27,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <CollectionImage collectionName="main_sale" navigation={navigation} />
       */}
       <CartSummary navigation={navigation} />
+      <Button
+        title="Go to Products"
+        onPress={() => navigation.navigate('Collections')}
+      /> 
       <ProductsSlider 
       collectionName="main_sale" 
       navigation={navigation}

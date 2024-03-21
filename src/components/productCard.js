@@ -32,11 +32,11 @@ const ProductCard = ({ product, onPress, customCardStyle }) => {
       <Text style={styles.vendor}>{product.vendor}</Text> 
       <View style={styles.priceContainer}>
         <Text style={[styles.price, { color: priceColor }]}>
-          {formatPrice(productPrice)}
+          ${formatPrice(productPrice)}
         </Text>
         {productCompareAtPrice && (
           <Text style={styles.compareAtPrice}>
-            {formatPrice(productCompareAtPrice)}
+            ${formatPrice(productCompareAtPrice)}
           </Text>
         )}
       </View>
@@ -51,27 +51,15 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     width: "50%",
     margin: 8,
-    padding: 10,
-    borderRadius: 15,
     overflow: "hidden",
     backgroundColor: '#fff', // Set the background color to white
-  
-    // Shadow for iOS
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 1.41,
-  
-    // Elevation for Android
-    elevation: 2,
+
   },
   image: {
     width: "100%", 
     height: 150,
-    objectFit: "contain"
+    objectFit: "contain",
+    borderRadius: 15
   },
   title: {
     // Define your styles for the title

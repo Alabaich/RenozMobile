@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -10,12 +11,12 @@ import {
   Image,
 } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
-import { Picker } from '@react-native-picker/picker';
 import client from '../components/shopifyInitialisation';
 import { useCart } from '../CartContext';
 import defaultImage from '../images/defaultImage.png';
 import closeIcon from '../icons/close.png';
 import Modal from 'react-native-modal';
+import ImageZoom from 'react-native-image-pan-zoom';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -32,6 +33,7 @@ const ProductDetail = ({ route }) => {
   const [showAddToCartPopup, setShowAddToCartPopup] = useState(false);
 
 
+
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
@@ -42,37 +44,29 @@ const ProductDetail = ({ route }) => {
         setSelectedVariant(defaultVariant);
         setVariantTitle(`${productDetails.title} - ${defaultVariant.selectedOptions.map(o => o.value).join(', ')}`);
         setVariantPrice(defaultVariant.price.amount); // Ensure you're accessing the amount correctly
-  
+
         // Log the variants and their options to see the structure
         productDetails.variants.forEach(variant => {
-          console.log(`Variant ID: ${variant.id}, Options:`, variant.selectedOptions);
+
         });
       } catch (error) {
         console.error('Error fetching product details:', error);
       }
     };
-  
+
     fetchProductDetails();
   }, [productId]);
 
 
   const updateSelectedOptions = (optionName, optionValue) => {
-    // Adjust this line to only store the option value, not the nested object
     const updatedOptionValue = optionValue.value || optionValue;
-
-    const updatedOptions = {
-      ...selectedOptions,
-      [optionName]: updatedOptionValue,
-    };
+    const updatedOptions = { ...selectedOptions, [optionName]: updatedOptionValue };
     setSelectedOptions(updatedOptions);
 
     if (product && Object.keys(updatedOptions).length === product.options.length) {
-      console.log('Updated selected options:', updatedOptions);
-
-      // Adjust the find logic to compare simple key-value pairs
-      const matchingVariant = product.variants.find((variant) =>
-        variant.selectedOptions.every((option) =>
-          updatedOptions[option.name] === option.value
+      const matchingVariant = product.variants.find(variant =>
+        variant.selectedOptions.every(
+          option => updatedOptions[option.name] === option.value
         )
       );
 
@@ -80,15 +74,34 @@ const ProductDetail = ({ route }) => {
         setSelectedVariant(matchingVariant);
         setVariantTitle(`${product.title} - ${matchingVariant.selectedOptions.map(o => o.value).join(', ')}`);
         setVariantPrice(matchingVariant.price.amount);
-        console.log(`Matching Variant ID: ${matchingVariant.id}`);
+
+        // Find the index of the matching variant's image in the product images array
+        const variantImageSrc = matchingVariant.image.src;
+        const imageIndex = product.images.findIndex(image => image.src === variantImageSrc);
+
+        // Update the carousel's active image index if the image is found
+        if (imageIndex !== -1) {
+          setSelectedImageIndex(imageIndex);
+        }
       } else {
         console.error('No matching variant found for the selected options:', updatedOptions);
-        // Handle no matching variant case
+        // Handle no matching variant case here
       }
     }
   };
 
-  
+
+  const isOptionValueAvailable = (checkingOptionName, checkingOptionValue) => {
+    return product.variants.some((variant) => {
+      const optionMatch = variant.selectedOptions.every((option) => {
+        // If we're checking the current option, see if the value matches.
+        if (option.name === checkingOptionName) return option.value === checkingOptionValue;
+        // For other options, they must match the already selected values (if any).
+        return selectedOptions[option.name] === option.value || !selectedOptions[option.name];
+      });
+      return optionMatch;
+    });
+  };
 
 
   const handleAddToCart = () => {
@@ -104,61 +117,96 @@ const ProductDetail = ({ route }) => {
       alert('Please select a variant before adding to cart.');
     }
   };
-  
-  
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item, index, carouselType }) => {
     const handlePress = () => {
-      setSelectedImageIndex(item);
+      setSelectedImageIndex(index);
       setModalVisible(true);
     };
+    if (carouselType === 'modal') {
+      return (
+        <View style={styles.modalCarouselItemStyle}>
+          <ImageZoom
+            cropWidth={screenWidth}
+            cropHeight={300} // Adjust height as needed
+            imageWidth={screenWidth}
+            imageHeight={300} // Adjust height as needed
+            style={styles.modalCarouselItemStyle}
+          >
+            <Image
+              source={item.src ? { uri: item.src } : defaultImage}
+              style={{ width: screenWidth, height: 300 }} // Adjust height as needed
+              resizeMode="contain"
+            />
+          </ImageZoom>
+        </View>
 
-    return (
-      <TouchableOpacity onPress={handlePress} style={styles.mainCarouselItemStyle}>
-        <Image
-          source={{ uri: item.src || defaultImage }}
-          style={styles.image}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
-    );
+      );
+    } else {
+      return (
+        <TouchableOpacity
+          onPress={handlePress}
+          style={styles.mainCarouselItemStyle}
+        >
+          <Image
+            source={item.src ? { uri: item.src } : defaultImage}
+            style={styles.image}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      );
+    }
   };
-
   if (!product) {
     return <ActivityIndicator size="large" />;
   }
-
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <Carousel
-          data={product.images.length > 0 ? product.images : [defaultImage]}
-          renderItem={renderItem}
-          sliderWidth={screenWidth}
-          itemWidth={screenWidth}
-        />
+        <View style={styles.carouselContainer}>
+          <Carousel
+            data={product.images.length > 0 ? product.images : [defaultImage]}
+
+            sliderWidth={screenWidth}
+            itemWidth={screenWidth}
+            firstItem={selectedImageIndex}
+            onSnapToItem={(index) => setSelectedImageIndex(index)}
+            renderItem={({ item, index }) => renderItem({ item, index, carouselType: 'main' })}
+          />
+        </View>
         <View style={styles.infoContainer}>
           <Text style={styles.title}>{variantTitle}</Text>
 
           <Text style={styles.vendor}>{product.vendor}</Text>
           <Text style={styles.price}>{`Price: $${Number(variantPrice).toFixed(2)}`}</Text>
-          {product.options.map((option, index) => (
-            <View key={index} style={styles.variantOptionContainer}>
-              <Text style={styles.variantOptionTitle}>{option.name}</Text>
-              {option.values.map((optionValue, valueIndex) => (
-                <TouchableOpacity
-                  key={valueIndex}
-                  style={[
-                    styles.variantButton,
-                    selectedOptions[option.name] === optionValue.value && styles.variantButtonSelected,
-                  ]}
-                  onPress={() => updateSelectedOptions(option.name, optionValue.value)}
-                >
-                  <Text style={styles.variantButtonText}>{optionValue.value}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          ))}
+          {product.options.map((option, index) => {
+            // Check if the option has more than one value
+            if (option.values.length > 1) {
+              return (
+                <View key={index} style={styles.variantOptionContainer}>
+                  <Text style={styles.variantOptionTitle}>{option.name}</Text>
+                  {option.values.map((optionValue, valueIndex) => {
+                    const isAvailable = isOptionValueAvailable(option.name, optionValue.value);
+                    return (
+                      <TouchableOpacity
+                        key={valueIndex}
+                        style={[
+                          styles.variantButton,
+                          selectedOptions[option.name] === optionValue.value && styles.variantButtonSelected,
+                          !isAvailable && styles.variantButtonUnavailable,
+                        ]}
+                        onPress={() => isAvailable && updateSelectedOptions(option.name, optionValue)}
+                        disabled={!isAvailable}
+                      >
+                        <Text style={styles.variantButtonText}>{optionValue.value}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              );
+            }
+            return null; // Return null if the option has only one value
+          })}
         </View>
       </ScrollView>
       <Modal
@@ -172,32 +220,29 @@ const ProductDetail = ({ route }) => {
         <View style={styles.modalContent}>
           <Carousel
             data={product.images}
-            renderItem={renderItem}
             sliderWidth={screenWidth}
             itemWidth={screenWidth}
             firstItem={selectedImageIndex}
             onSnapToItem={(index) => setSelectedImageIndex(index)}
-            style={styles.carousel}
+            renderItem={({ item, index }) => renderItem({ item, index, carouselType: 'modal' })}
           />
           <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
             <Image source={closeIcon} style={styles.closeButtonIcon} />
           </TouchableOpacity>
         </View>
       </Modal>
-
       <View style={styles.footer}>
         <TouchableOpacity style={styles.button} onPress={handleAddToCart}>
           <Text style={styles.buttonText}>Add to Cart</Text>
         </TouchableOpacity>
       </View>
       {showAddToCartPopup && (
-  <View style={styles.popupContainer}>
-    <Text style={styles.popupText}>
-      Added to cart - {variantTitle} for ${Number(variantPrice).toFixed(2)}
-    </Text>
-  </View>
-)}
-
+        <View style={styles.popupContainer}>
+          <Text style={styles.popupText}>
+            Added to cart - {variantTitle} for ${Number(variantPrice).toFixed(2)}
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -209,10 +254,23 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1, // The ScrollView takes up all available space above the footer
   },
-
+  mainCarouselItemStyle: {
+    // styles specific to the main view carousel items
+    width: screenWidth,
+    height: 300,
+    // ... other styles
+  },
+  modalCarouselItemStyle: {
+    width: screenWidth,
+    height: '100%',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   image: {
     width: screenWidth,
     height: 300,
+    objectFit: "cover",
   },
   infoContainer: {
     padding: 15,
@@ -224,7 +282,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'black', // or any color you want
+    color: '#2c2d2c', // or any color you want
     marginBottom: 10,
   },
   vendor: {
@@ -249,10 +307,11 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   modalContent: {
+    flex: 1,
+    height: "100%",
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
   },
   closeButton: {
     position: "absolute",
@@ -264,8 +323,9 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
   },
-  carousel: {
-
+  carouselContainer: {
+    marginTop: 0, // Adjust this value as needed to pull the carousel up
+    // ... other styling for the carousel container
   },
   carouselImage: {
     width: '100%', // Use 100% of the TouchableOpacity
@@ -273,13 +333,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   footer: {
     padding: 15, // Padding inside the footer (adjust as needed)
     backgroundColor: '#fff', // Background color for the footer
     shadowOpacity: 0,
   },
-
   button: {
     height: 50, // Specify a fixed height for your button (adjust as needed)
     justifyContent: "center", // Center content vertically
@@ -293,7 +351,6 @@ const styles = StyleSheet.create({
     fontWeight: "medium",
     fontSize: 18,
   },
-
   variantsContainer: {
     padding: 15,
     backgroundColor: '#f7f7f7', // A light background color for the variants section
@@ -333,7 +390,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  
+  variantButtonUnavailable: {
+    borderColor: '#ccc', // Greyed out border color
+    backgroundColor: '#f0f0f0', // Greyed out background color
+  },
 });
 
 export default ProductDetail;

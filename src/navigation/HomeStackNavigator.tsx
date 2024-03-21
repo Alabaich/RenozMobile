@@ -10,6 +10,7 @@ import ProductDetail from '../pages/ProductDetail';
 import CollectionProductsHeader from '../headers/CollectionHeader';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../types';
+import ProductDetailHeader from '../headers/ProductDetailHeader';
 
 const HomeStack = createStackNavigator();
 
@@ -53,11 +54,14 @@ const HomeStackNavigator = () => {
   }}
 />
 
-      <HomeStack.Screen
-        name="ProductDetail"
-        component={ProductDetail}
-        options={{ /* options for CategoriesScreen */ }}
-      />
+<HomeStack.Screen
+  name="ProductDetail"
+  component={ProductDetail}
+  options={({ navigation }) => ({ // This function provides you with the navigation prop
+    headerTransparent: true,
+    header: () => <ProductDetailHeader navigation={navigation} />, // Now you can pass it to HomeHeader
+  })}
+/>
 
     </HomeStack.Navigator>
   );
