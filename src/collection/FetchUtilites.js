@@ -147,6 +147,11 @@ export const fetchFilteredProducts = async (afterCursor = null, collectionId, se
   try {
     // Adjusting filters criteria to match the expected structure in the GraphQL query
     let filtersCriteria = [];
+
+    const priceFilter = selectedFilters['filter.v.price'];
+    const [minPrice, maxPrice] = priceFilter || [null, null];
+    
+
     Object.entries(selectedFilters ?? {}).forEach(([filterId, optionValues]) => {
       
       if (filterId === "filter.p.product_type") {
@@ -161,7 +166,10 @@ export const fetchFilteredProducts = async (afterCursor = null, collectionId, se
             "productVendor": value,
           });
         });
-      }else if (filterId.includes("custom")) {
+      } else if (filterId === "filter.v.price") {
+
+        console.log('Min Price:', minPrice, 'Max Price:', maxPrice);
+      } else if (filterId.includes("custom")) {
         optionValues.forEach(value => {
           const parts = filterId.split('.'); // Split filterId into parts
           const mIndex = parts.indexOf('m'); // Find the index of 'm'
@@ -198,6 +206,21 @@ export const fetchFilteredProducts = async (afterCursor = null, collectionId, se
         });
       }
     });
+
+    if (minPrice !== null && maxPrice !== null && minPrice !== "" && maxPrice !== "") {
+      if ( maxPrice !== null && maxPrice !== "" ) {
+        filtersCriteria.push({
+          "price": { "min": parseFloat(minPrice) }
+      });
+      } else {
+        filtersCriteria.push({
+          "price": { "min": parseFloat(minPrice), "max": parseFloat(maxPrice) }
+      });
+      }
+
+      console.log('Min Price:', minPrice, 'Max Price:', maxPrice);
+  }
+
 
     const graphqlQuery = {
       query: `
@@ -247,6 +270,8 @@ export const fetchFilteredProducts = async (afterCursor = null, collectionId, se
         filters: filtersCriteria, // Ensure this matches the structure expected by your GraphQL server
       },
     };
+
+    console.log('Sending GraphQL Query:', JSON.stringify(graphqlQuery, null, 2));
 
     // Assuming `axios` and other constants are already defined elsewhere
     const response = await axios.post(

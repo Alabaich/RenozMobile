@@ -3,7 +3,7 @@ import { View, Button } from 'react-native';
 import { fetchProducts, fetchMoreProducts, fetchAllFilters, fetchFilteredProducts  } from './FetchUtilites'
 import ProductList from './ProductList';
 import FilterModal from './FilterModal';
-import filterIcon from '../icons/filter.png'; // Update with the correct path to your back icon
+
 
 const Collection = ({ route, navigation }) => {
     const { collectionId } = route.params;
@@ -93,12 +93,26 @@ useEffect(() => {
   };
   
 
-  const applyFilters = async () => {
-    const filteredResults = await fetchFilteredProducts(null, collectionId, selectedFilters); // Use the selectedFilters state here
-    setProducts(filteredResults.newProducts);
+  const applyFilters = async (inputMinPrice, inputMaxPrice) => {
+    const minPrice = parseFloat(inputMinPrice);
+    const maxPrice = parseFloat(inputMaxPrice);
+
+    const updatedSelectedFilters = {
+        ...selectedFilters,
+        'filter.v.price': [minPrice, maxPrice]
+    };
+
+    setSelectedFilters(updatedSelectedFilters); // Update state
+
+    const filteredResults = await fetchFilteredProducts(null, collectionId, updatedSelectedFilters);
+    if (!filteredResults.errors) {
+        setProducts(filteredResults.newProducts);
+        setCursor(filteredResults.endCursor);
+    }
     setIsFilterModalVisible(false);
-  };
-  
+};
+
+
 
   return (
     <View>

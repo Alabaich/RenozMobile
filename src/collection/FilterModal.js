@@ -1,107 +1,105 @@
 import React, { useState } from 'react';
-import { View, Modal, Button, TouchableOpacity, Text, ScrollView, StyleSheet,Dimensions } from 'react-native';
-import CustomRangeSlider from '@react-native-community/slider';
+import { View, Modal, Button, TouchableOpacity, Text, ScrollView, StyleSheet, TextInput } from 'react-native';
 
-const FilterModal = ({ 
-    isVisible, 
-    onClose, 
-    filters, 
-    selectedFilters, 
-    onFilterSelect, 
-    onApply,
-    minPrice, 
-    maxPrice  
-  }) => {
-    const [visibleFilters, setVisibleFilters] = useState({});
-    const toggleFilterVisibility = (filterId) => {
-        setVisibleFilters(prevState => ({
-            ...prevState,
-            [filterId]: !prevState[filterId]
-        }));
-    };
+const FilterModal = ({
+  isVisible,
+  onClose,
+  filters,
+  selectedFilters,
+  onFilterSelect,
+  onApply,
+  minPrice,
+  maxPrice,
+}) => {
+  const [visibleFilters, setVisibleFilters] = useState({});
+  const [inputMinPrice, setInputMinPrice] = useState(minPrice ? minPrice.toString() : '');
+  const [inputMaxPrice, setInputMaxPrice] = useState(maxPrice ? maxPrice.toString() : '');
 
-    const handleSelect = (filterId, valueLabel, filterLabel) => {
-        const isSelected = selectedFilters[filterId] && selectedFilters[filterId].includes(valueLabel);
+  const toggleFilterVisibility = (filterId) => {
+    setVisibleFilters((prevState) => ({
+      ...prevState,
+      [filterId]: !prevState[filterId],
+    }));
+  };
 
-        onFilterSelect(filterId, valueLabel, filterLabel, isSelected);
-    };
-    const renderPriceFilter = () => {
+  const handleSelect = (filterId, valueLabel, filterLabel) => {
+    const isSelected = selectedFilters[filterId] && selectedFilters[filterId].includes(valueLabel);
+    onFilterSelect(filterId, valueLabel, filterLabel, isSelected);
+  };
+
+  const renderFilterSection = (filter) => {
+    const isFilterVisible = !!visibleFilters[filter.id];
+    if (filter.id === 'filter.v.price') {
         return (
-          <View style={styles.filterSection}>
-            <View style={styles.priceLabels}>
-              <Text style={[styles.priceLabel]}>
-                {`$${minPrice.toFixed(2)}`} 
-              </Text>
-              <Text style={[styles.priceLabel, ]}>
-                {`$${maxPrice.toFixed(2)}`}
-              </Text>
-            </View>
-          </View>
-        );
-      };
-
-      const renderFilterSection = (filter) => {
-        const isFilterVisible = !!visibleFilters[filter.id];
-      
-        if (filter.id === "filter.v.price") {
-            const isFilterVisible = !!visibleFilters[filter.id];
-            return (
-              <View key={`price-filter-${filter.id}`} style={styles.filterSection}>
-                <TouchableOpacity onPress={() => toggleFilterVisibility(filter.id)}>
-                  <Text style={styles.filterTitle}>Price</Text>
-                </TouchableOpacity>
-                {isFilterVisible && renderPriceFilter()}
-              </View>
-            );
-          }
-
-        return (
-          <View key={filter.id} style={styles.filterSection}>
+          <View key={`price-filter-${filter.id}`} style={styles.filterSection}>
             <TouchableOpacity onPress={() => toggleFilterVisibility(filter.id)}>
-              <Text style={styles.filterTitle}>{filter.label}</Text>
+              <Text style={styles.filterTitle}>Price</Text>
             </TouchableOpacity>
-            {isFilterVisible && filter.values.map((value, index) => (
-              <TouchableOpacity
-                key={`${filter.id}-${value.id}-${index}`} 
-                onPress={() => handleSelect(filter.id, value.label, filter.label)}
-                style={[
-                  styles.filterOption,
-                  isSelected(filter.id, value.label) ? styles.selectedFilterOption : styles.unselectedFilterOption,
-                ]}
-              >
-                <Text style={styles.filterOptionText}>{value.label}</Text>
-              </TouchableOpacity>
-            ))}
+            {isFilterVisible && (
+              <View>
+                <Text style={styles.label}>Minimal Price</Text>
+                <View style={styles.inputRow}>
+                  <TextInput
+                    style={styles.textInputWithBorder}
+                    onChangeText={setInputMinPrice}
+                    value={inputMinPrice}
+                    placeholder={`0`}
+                    keyboardType="numeric"
+                  />
+                </View>
+                <Text style={styles.label}>Maximal Price</Text>
+                <View style={styles.inputRow}>
+                  <TextInput
+                    style={styles.textInputWithBorder}
+                    onChangeText={setInputMaxPrice}
+                    value={inputMaxPrice}
+                    placeholder={`Max. price - ${maxPrice ? maxPrice.toString() : 'not set'}`}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            )}
           </View>
         );
-      };
-      
-      function isSelected(filterId, valueLabel) {
-        return selectedFilters[filterId] && selectedFilters[filterId].includes(valueLabel);
       }
-      
 
     return (
-        <Modal
-            visible={isVisible}
-            animationType="slide"
-            transparent={true}
-            onRequestClose={onClose}
-        >
-            <View style={styles.modalContent}>
-                <Button title="Close" onPress={onClose} />
-                <ScrollView>
-                    {filters.map(renderFilterSection)}
-                </ScrollView>
-                <Button title="Apply Filters" onPress={onApply} />
-            </View>
-        </Modal>
+      <View key={filter.id} style={styles.filterSection}>
+        <TouchableOpacity onPress={() => toggleFilterVisibility(filter.id)}>
+          <Text style={styles.filterTitle}>{filter.label}</Text>
+        </TouchableOpacity>
+        {isFilterVisible && filter.values.map((value, index) => (
+          <TouchableOpacity
+            key={`${filter.id}-${value.id}-${index}`}
+            onPress={() => handleSelect(filter.id, value.label, filter.label)}
+            style={[
+              styles.filterOption,
+              isSelected(filter.id, value.label) ? styles.selectedFilterOption : styles.unselectedFilterOption,
+            ]}
+          >
+            <Text style={styles.filterOptionText}>{value.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     );
+  };
+
+  function isSelected(filterId, valueLabel) {
+    return selectedFilters[filterId] && selectedFilters[filterId].includes(valueLabel);
+  }
+
+  return (
+    <Modal visible={isVisible} animationType="slide" transparent={true} onRequestClose={onClose}>
+      <View style={styles.modalContent}>
+        <Button title="Close" onPress={onClose} />
+        <ScrollView>{filters.map(renderFilterSection)}</ScrollView>
+        <Button title="Apply Filters" onPress={() => onApply(inputMinPrice, inputMaxPrice)} />
+      </View>
+    </Modal>
+  );
 };
 
-
-
-
+// Styles remain unchanged
 
 const styles = StyleSheet.create({
     modalContent: {
@@ -142,6 +140,21 @@ const styles = StyleSheet.create({
     filterOptionText: {
         textAlign: 'center',
     },
+    label: {
+        fontWeight: 'bold',
+        marginTop: 10,
+      },
+      inputRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+      },
+      textInputWithBorder: {
+        borderWidth: 1,
+        borderColor: 'black',
+        padding: 10,
+        flex: 1, // Ensure it takes up the available space
+      },
 });
 
 export default FilterModal;

@@ -7,6 +7,8 @@ import { UserProvider, useUser } from './src/UserContext';
 import { CartProvider } from './src/CartContext';
 import LinearGradient from 'react-native-linear-gradient';
 import logoWhite from "./src/images/logoWhite.png";
+import 'react-native-gesture-handler'
+
 
 
 
