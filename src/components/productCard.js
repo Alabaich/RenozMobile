@@ -1,10 +1,12 @@
+
+
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import defaultImage from '../images/defaultImage.png'
 
 const ProductCard = ({ product, onPress, customCardStyle }) => {
   const imageSrc = product.images?.[0]?.src ? { uri: product.images[0].src } : defaultImage;
-  
+
   // Check if price and compareAtPrice are available before trying to access `amount`
   const productPrice = product.variants[0].price ? product.variants[0].price.amount : 'N/A';
   const productCompareAtPrice = product.variants[0].compareAtPrice ? product.variants[0].compareAtPrice.amount : null;
@@ -29,7 +31,7 @@ const ProductCard = ({ product, onPress, customCardStyle }) => {
     <TouchableOpacity onPress={() => onPress(product)} style={[styles.cardContainer, customCardStyle]}>
       <Image source={imageSrc} style={styles.image} />
       <Text style={styles.title}>{truncateTitle(product.title)}</Text>
-      <Text style={styles.vendor}>{product.vendor}</Text> 
+      <Text style={styles.vendor}>{product.vendor}</Text>
       <View style={styles.priceContainer}>
         <Text style={[styles.price, { color: priceColor }]}>
           ${formatPrice(productPrice)}
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
 
   },
   image: {
-    width: "100%", 
+    width: "100%",
     height: 150,
     objectFit: "contain",
     borderRadius: 15
@@ -90,4 +92,6 @@ const styles = StyleSheet.create({
 });
 
 export default React.memo(ProductCard);
+
+
 

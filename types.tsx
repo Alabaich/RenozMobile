@@ -10,7 +10,12 @@ export type RootStackParamList = {
     CollectionProducts: {
       collectionId: string;
       collectionName: string;
+      showFilterModal: any;
     };
     ProductDetail: { productId: string };
+    FilterScreen: {
+      collectionId: string;
+      // Include other parameters if necessary
+    };
   };
   

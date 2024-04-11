@@ -17,7 +17,7 @@ type HomeHeaderProps = {
 const HomeHeader: React.FC<HomeHeaderProps> = ({ navigation }) => {
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => navigation.navigate('Categories')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Collections')}>
         <Image source={MenuIcon} style={styles.icon} />
       </TouchableOpacity>
       <Image source={Logo} style={styles.logo} resizeMode="contain" />

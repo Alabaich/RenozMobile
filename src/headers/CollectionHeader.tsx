@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import BackIcon from '../icons/back.png'; // Update with the correct path to your back icon
-import FilterIcon from '../icons/delivery.png'; // Update with the correct path to your filter icon
+import FilterIcon from '../icons/filter.png'; // Update with the correct path to your filter icon
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types'; // ensure the path is correct
@@ -14,11 +14,15 @@ type CollectionProductsScreenNavigationProp = StackNavigationProp<RootStackParam
 type Props = {
   route: CollectionProductsScreenRouteProp;
   navigation: CollectionProductsScreenNavigationProp;
+  showFilterModal: () => void; // Add this line to include the new prop for toggling filter modal
 };
 
 // Ensure the Props are used here for the function component type definition
 const CollectionProductsHeader: React.FC<Props> = ({ route, navigation }) => {
   const collectionName = route.params.collectionName; // should work if types are correct
+  const handleFilterPress = () => {
+    navigation.setParams({ showFilterModal: true });
+  };
 
   return (
     <View style={styles.headerContainer}>
@@ -26,7 +30,7 @@ const CollectionProductsHeader: React.FC<Props> = ({ route, navigation }) => {
         <Image source={BackIcon} style={styles.icon} />
       </TouchableOpacity>
       <Text style={styles.title}>{collectionName}</Text>
-      <TouchableOpacity onPress={() => { /* placeholder for filter action */ }}>
+      <TouchableOpacity onPress={handleFilterPress}>
         <Image source={FilterIcon} style={styles.icon} />
       </TouchableOpacity>
     </View>
