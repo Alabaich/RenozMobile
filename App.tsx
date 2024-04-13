@@ -10,8 +10,6 @@ import logoWhite from "./src/images/logoWhite.png";
 import 'react-native-gesture-handler'
 
 
-
-
 // Create a new component that will determine which screen to show
 const AuthSwitch = () => {
   const { isLoggedIn, isLoading } = useUser();

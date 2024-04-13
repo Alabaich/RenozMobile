@@ -1,18 +1,20 @@
 // In ./src/pages/SearchScreen.tsx
 import React, { useState } from 'react';
 import { View, TextInput, FlatList, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import client from '../components/shopifyInitialisation';
+import ProductCard from '../components/productCard';
 
 export const SearchScreen = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
   const handleSearch = async (searchText) => {
     setLoading(true);
     setQuery(searchText);
     
-    // Clear results if the search text is empty
     if (searchText === '') {
       setResults([]);
       setLoading(false);
@@ -20,8 +22,6 @@ export const SearchScreen = () => {
     }
 
     try {
-      // Perform the search query using the Shopify JS Buy SDK
-      // Here we're constructing a search query that can match several fields
       const searchQuery = `title:*${searchText}* OR tag:*${searchText}* OR product_type:*${searchText}*`;
       let query = {
         query: searchQuery
@@ -31,18 +31,17 @@ export const SearchScreen = () => {
       setResults(products);
     } catch (error) {
       console.error('Error fetching products:', error);
-      setResults([]); // Clear results on error
+      setResults([]);
     }
     
     setLoading(false);
   };
 
-  // Render function for FlatList items
   const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Text style={styles.item}>{item.title}</Text>
-      {/* You can add more product details here */}
-    </View>
+    <ProductCard
+      product={item}
+      onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+    />
   );
 
   return (
@@ -61,6 +60,8 @@ export const SearchScreen = () => {
           data={results}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
+          numColumns={2}  // Display results in a grid like the ProductList
+          contentContainerStyle={{ padding: 7 }}
         />
       )}
     </View>
@@ -79,14 +80,6 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: 10,
     borderRadius: 10,
-  },
-  itemContainer: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: 'gray',
-  },
-  item: {
-    fontSize: 18,
   },
 });
 

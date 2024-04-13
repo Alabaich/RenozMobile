@@ -9,6 +9,7 @@ import ProductsSlider from '../components/productsSlider';
 import CartSummary from '../components/CartSummary';
 import CollectionCards from '../components/CollectionGrid';
 
+
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
 type Props = {

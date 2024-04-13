@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "46567022863",
+    "project_id": "renoz-app",
+    "storage_bucket": "renoz-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:46567022863:android:f2260a27492ffefe565e7a",
+        "android_client_info": {
+          "package_name": "com.renoz.renoz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiE95YMUM-hgiQQcJ017_SOHQ2Q2mzSlM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -153,7 +153,6 @@ export const fetchFilteredProducts = async (afterCursor = null, collectionId, se
     
 
     Object.entries(selectedFilters ?? {}).forEach(([filterId, optionValues]) => {
-      
       if (filterId === "filter.p.product_type") {
         optionValues.forEach(value => {
           filtersCriteria.push({
@@ -168,7 +167,6 @@ export const fetchFilteredProducts = async (afterCursor = null, collectionId, se
         });
       } else if (filterId === "filter.v.price") {
 
-        console.log('Min Price:', minPrice, 'Max Price:', maxPrice);
       } else if (filterId.includes("custom")) {
         optionValues.forEach(value => {
           const parts = filterId.split('.'); // Split filterId into parts
@@ -217,8 +215,6 @@ export const fetchFilteredProducts = async (afterCursor = null, collectionId, se
           "price": { "min": parseFloat(minPrice), "max": parseFloat(maxPrice) }
       });
       }
-
-      console.log('Min Price:', minPrice, 'Max Price:', maxPrice);
   }
 
 

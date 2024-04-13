@@ -27,6 +27,19 @@ const FilterModal = ({
     onFilterSelect(filterId, valueLabel, filterLabel, isSelected);
   };
 
+  const renderAppliedFilters = () => {
+    return Object.keys(selectedFilters).filter(filterId => filterId !== 'filter.v.price').map(filterId => (
+      selectedFilters[filterId].map(valueLabel => (
+        <View key={`${filterId}-${valueLabel}`} style={styles.appliedFilter}>
+          <Text style={styles.appliedFilterText}>{`${valueLabel}`}</Text>
+          <TouchableOpacity onPress={() => handleSelect(filterId, valueLabel, null, true)}>
+            <Text style={styles.removeFilterText}>×</Text>
+          </TouchableOpacity>
+        </View>
+      ))
+    ));
+  };
+
   const renderFilterSection = (filter) => {
     const isFilterVisible = !!visibleFilters[filter.id];
     if (filter.id === 'filter.v.price') {
@@ -61,7 +74,7 @@ const FilterModal = ({
             )}
           </View>
         );
-      }
+    }
 
     return (
       <View key={filter.id} style={styles.filterSection}>
@@ -92,6 +105,9 @@ const FilterModal = ({
     <Modal visible={isVisible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <View style={styles.modalContent}>
         <Button title="Close" onPress={onClose} />
+        <View style={styles.appliedFiltersContainer}>
+          {renderAppliedFilters()}
+        </View>
         <ScrollView>{filters.map(renderFilterSection)}</ScrollView>
         <Button title="Apply Filters" onPress={() => onApply(inputMinPrice, inputMaxPrice)} />
       </View>
@@ -132,10 +148,10 @@ const styles = StyleSheet.create({
         borderColor: '#ddd',
     },
     selectedFilterOption: {
-        backgroundColor: '#007bff', // Adjust as needed
+        backgroundColor: '#007bff',
     },
     unselectedFilterOption: {
-        backgroundColor: '#ffffff', // Adjust as needed
+        backgroundColor: '#ffffff',
     },
     filterOptionText: {
         textAlign: 'center',
@@ -153,8 +169,28 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'black',
         padding: 10,
-        flex: 1, // Ensure it takes up the available space
+        flex: 1,
       },
+    appliedFiltersContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
+    appliedFilter: {
+        flexDirection: 'row',
+        backgroundColor: '#e1e1e1',
+        borderRadius: 20,
+        padding: 8,
+        margin: 4,
+        alignItems: 'center',
+    },
+    appliedFilterText: {
+        marginRight: 6,
+    },
+    removeFilterText: {
+        color: '#ff0000',
+    },
 });
 
 export default FilterModal;

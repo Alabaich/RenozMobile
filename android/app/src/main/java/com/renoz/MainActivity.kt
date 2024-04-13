@@ -1,4 +1,3 @@
-package com.renoz
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
